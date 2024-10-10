@@ -5,6 +5,7 @@ library(tidyverse)
 library(stringr)
 library(ggrepel)
 library(eRm)
+library(rsconnect)
 
 ## lanalytics ##
 # f2 input --------------------------------------------------------
@@ -37,7 +38,7 @@ read_lc <- function(file){
   
   quiz_long <- purrr::reduce(quiz_long, left_join) %>% 
     dplyr::mutate(quiz = file,
-                  `responded at` = parse_datetime(x = `responded at`))
+                  "responded at" = parse_datetime(x = "responded at"))
   class(quiz_long) <- c("quizz", class(quiz_long))
   quiz_long %>% 
     mutate(score = as.integer(score))
@@ -278,7 +279,7 @@ sidebar <- dashboardSidebar(sidebarMenu(
 
 body <- dashboardBody(
   tabItems(
-# u1 instructions --------------------------------------------------------
+    # u1 instructions --------------------------------------------------------
     tabItem(tabName = "1_instructions", 
             fluidPage(
               titlePanel(strong("Welcome to the lanalytics dashboard!")),
@@ -300,7 +301,7 @@ body <- dashboardBody(
                   p(code("install_packages('eRm')")),
                   p("On the other hand, the lanalytics package contain some useful statistical analysis 
                    that can be used for online quizzes. This package can be installed with the following command: ",
-                  code("install_github('savrgg/lanalytics')")),
+                    code("install_github('savrgg/lanalytics')")),
                   br(),
                   p("For an introduction and examples, please visit the ", 
                     a("lanalytics homepage.", href = "https://savrgg.github.io/lanalytics/"))
@@ -330,11 +331,11 @@ body <- dashboardBody(
                   p("7) Go to the ", strong("IRT: eRm package"), 
                     " tab and for each subtab select the quiz to analyze."),
                   br()
-                  )
                 )
               )
-            ),
-# u2 input --------------------------------------------------------
+            )
+    ),
+    # u2 input --------------------------------------------------------
     tabItem(tabName = "2_input",
             fluidRow(
               tabBox(
@@ -346,19 +347,19 @@ body <- dashboardBody(
                            " and the second indicating its ", em("answering time") ,". In addition, the file should contain an 
                            ID column called ", em("email address"), ". This file can be exported from the Learning Catalytics software."),
                          br(),
-                  fileInput('file1', 'Select file:',
-                            accept = c('.csv'),
-                            multiple = TRUE
-                            ),
-                  p("Now click ", strong("Add quiz dataset"), " to correctly upload one or more files 
-                    or press ", strong("Remove cognitive dataset"), " to delete them all."),
-                  column(3, 
-                         actionButton(inputId = "upload_quiz_dataset", 
-                                      label = "Add quiz dataset")
+                         fileInput('file1', 'Select file:',
+                                   accept = c('.csv'),
+                                   multiple = TRUE
                          ),
-                  column(3, offset = 3,
-                         actionButton(inputId = "remove_quiz_dataset", 
-                                      label = "Remove quiz datasets")
+                         p("Now click ", strong("Add quiz dataset"), " to correctly upload one or more files 
+                    or press ", strong("Remove cognitive dataset"), " to delete them all."),
+                         column(3, 
+                                actionButton(inputId = "upload_quiz_dataset", 
+                                             label = "Add quiz dataset")
+                         ),
+                         column(3, offset = 3,
+                                actionButton(inputId = "remove_quiz_dataset", 
+                                             label = "Remove quiz datasets")
                          )
                 )
               ),
@@ -385,7 +386,7 @@ body <- dashboardBody(
                                 actionButton(inputId = "remove_cognitive_dataset", 
                                              label = "Remove congnitive datasets")
                          )
-                         ),
+                ),
                 tabPanel("Final Exam", 
                          br(),
                          p("Select a *.csv file that contains the final grade for each student. This file must 
@@ -404,8 +405,8 @@ body <- dashboardBody(
                                 actionButton(inputId = "remove_finalexam_dataset", 
                                              label = "Remove final exam data")
                          )
-                         )
                 )
+              )
             ),
             fluidRow(
               box(title = "Uploaded quiz files:", status = "primary", width = 6,
@@ -419,7 +420,7 @@ body <- dashboardBody(
               )
             )
     ),
-# u3 display --------------------------------------------------------
+    # u3 display --------------------------------------------------------
     tabItem(tabName = "3_display", 
             fluidRow(
               br(),
@@ -433,8 +434,8 @@ body <- dashboardBody(
                     per item per quiz per student:"),
                   br(),
                   DT::dataTableOutput('quiz_dataset')
-                  )
-              ), 
+              )
+            ), 
             fluidRow(
               br(),
               box(title = "Select column of the item:", 
@@ -467,7 +468,7 @@ body <- dashboardBody(
                   DT::dataTableOutput('cognitive_dataset')
               )
             ),
-          fluidRow(
+            fluidRow(
               box(title = "Final exam dataset:", status = "primary", width = 12,
                   br(),
                   p("The final exam file uploaded is the following: "),
@@ -476,8 +477,8 @@ body <- dashboardBody(
                   DT::dataTableOutput('finalexam_dataset')
               )
             )
-           ),
-# u5 IRT-NO-discrim --------------------------------------------------------
+    ),
+    # u5 IRT-NO-discrim --------------------------------------------------------
     tabItem(tabName = "5_irt"),
     tabItem(tabName = "5_1_irt",
             fluidRow(
@@ -502,7 +503,7 @@ body <- dashboardBody(
                   plotOutput("plot_jointICC")
               )
             )
-            ),
+    ),
     tabItem(tabName = "5_2_irt",
             fluidRow(
               br(),
@@ -523,7 +524,7 @@ body <- dashboardBody(
                   plotOutput("plot_personItem")
               )
             )
-            ),
+    ),
     tabItem(tabName = "5_3_irt",
             fluidRow(
               br(),
@@ -542,7 +543,7 @@ body <- dashboardBody(
                   plotOutput("plot_personParameter")
               )
             )),
-# u6 analysis --------------------------------------------------------
+    # u6 analysis --------------------------------------------------------
     tabItem(tabName = "6_analysis"),
     tabItem(tabName = "6_1_individual",
             fluidRow(
@@ -588,7 +589,7 @@ body <- dashboardBody(
               box(title = "Select quizzes to analize:", status = "info", width = 10,
                   collapsible = TRUE,
                   uiOutput("choose_files_6_2")
-                  )
+              )
             ),
             fluidRow(
               box(title = "Histogram", status = "primary", width = 12,
@@ -651,10 +652,10 @@ body <- dashboardBody(
                     Also, if the grade of the final exam is provided, a red line will be show in the plot."),
                   collapsible = TRUE,
                   plotOutput("plot_group_tot")
-                  )
               )
             )
-))
+    )
+  ))
 
 # u-final --------------------------------------------------------
 ui <- dashboardPage(
@@ -670,8 +671,8 @@ server <- function(input, output) {
   q <- observe({
     if (input$quit_button == 1) stopApp()
   })
-# s1 instructions ------------------------------------------------------------------
-# s2 input ------------------------------------------------------------------
+  # s1 instructions ------------------------------------------------------------------
+  # s2 input ------------------------------------------------------------------
   infile_quiz <- eventReactive(input$upload_quiz_dataset, {
     validate(need(input$file1, message = "Please add a quiz dataset"))  
     infile_quiz <- input$file1
@@ -692,7 +693,7 @@ server <- function(input, output) {
   finalexam_values <- reactiveValues(df_data = NULL)
   observeEvent(input$remove_quiz_dataset, {
     quiz_values$df_data <- NULL
-    })
+  })
   observeEvent(input$upload_quiz_dataset, {
     xx <- lapply(1:nrow(infile_quiz()), function(num){
       add_times(read_lc(infile_quiz()$datapath[num]) %>% 
@@ -738,7 +739,7 @@ server <- function(input, output) {
       df_finalexam()$file %>% unique %>% data.frame() %>% setNames("Uploaded final exam file")}
   })
   
-# s3 display ------------------------------------------------------------------
+  # s3 display ------------------------------------------------------------------
   output$choose_cognitive_item <- renderUI({
     validate(need((df_cognitive() %>% data.frame() %>% names)[1], "Introduce a valid file."))
     radioButtons("choose_cognitive_item", "Choose the quiz-item column", 
@@ -784,7 +785,7 @@ server <- function(input, output) {
                   ))
   })
   
-# s5 IRT-NO-disc ------------------------------------------------------------------
+  # s5 IRT-NO-disc ------------------------------------------------------------------
   output$plot_jointICC <- renderPlot({
     validate(need(input$choose_files_5_1, message = "Please select a quizz"))
     if(exists("df_quiz")){
@@ -806,7 +807,7 @@ server <- function(input, output) {
       plot_personParameter(df_quiz() %>% filter(quiz %in% input$choose_files_5_3))
     }
   })
-# s6 analysis ------------------------------------------------------------------
+  # s6 analysis ------------------------------------------------------------------
   output$plot_guessers <- renderPlot({
     validate(need(input$choose_files_6_1, message = "Please select a quizz"))
     if(exists("df_quiz")){
@@ -866,24 +867,24 @@ server <- function(input, output) {
     }
   })
   
-# s-final ------------------------------------------------------------------
+  # s-final ------------------------------------------------------------------
   output$choose_files_5_1 <- renderUI({
     validate(need((df_quiz()$quiz %>% unique)[1], "Introduce a quiz datafile"))
     radioButtons("choose_files_5_1", "Choose files", 
-                       choices  = c(df_quiz()$quiz %>% unique),
-                       selected = c(df_quiz()$quiz %>% unique)[1])
+                 choices  = c(df_quiz()$quiz %>% unique),
+                 selected = c(df_quiz()$quiz %>% unique)[1])
   })
   output$choose_files_5_2 <- renderUI({
     validate(need((df_quiz()$quiz %>% unique)[1], "Introduce a quiz datafile"))
     radioButtons("choose_files_5_2", "Choose files", 
-                       choices  = c(df_quiz()$quiz %>% unique),
-                       selected = c(df_quiz()$quiz %>% unique)[1])
+                 choices  = c(df_quiz()$quiz %>% unique),
+                 selected = c(df_quiz()$quiz %>% unique)[1])
   })
   output$choose_files_5_3 <- renderUI({
     validate(need((df_quiz()$quiz %>% unique)[1], "Introduce a quiz datafile"))
     radioButtons("choose_files_5_3", "Choose files", 
-                       choices  = c(df_quiz()$quiz %>% unique),
-                       selected = c(df_quiz()$quiz %>% unique)[1])
+                 choices  = c(df_quiz()$quiz %>% unique),
+                 selected = c(df_quiz()$quiz %>% unique)[1])
   })
   output$choose_files_6_1 <- renderUI({
     validate(need((df_quiz()$quiz %>% unique)[1], "Introduce a quiz datafile"))
@@ -906,8 +907,8 @@ server <- function(input, output) {
   output$email_filtered <- renderUI({
     validate(need((df_quiz()$`email address` %>% unique)[1], "Introduce a quiz datafile"))
     selectInput("email_filtered", "Choose email", 
-                       choices  = c(df_quiz()$`email address` %>% unique),
-                       selected = c(df_quiz()$`email address` %>% unique)[1])
+                choices  = c(df_quiz()$`email address` %>% unique),
+                selected = c(df_quiz()$`email address` %>% unique)[1])
   })
 } # end server
 
