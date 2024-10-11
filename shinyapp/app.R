@@ -5,7 +5,6 @@ library(tidyverse)
 library(stringr)
 library(ggrepel)
 library(eRm)
-library(rsconnect)
 
 ## lanalytics ##
 # f2 input --------------------------------------------------------
@@ -38,8 +37,8 @@ read_lc <- function(file){
   
   quiz_long <- purrr::reduce(quiz_long, left_join) %>% 
     dplyr::mutate(quiz = file,
-                  "responded at" = parse_datetime(x = "responded at"))
-  class(quiz_long) <- c("quizz", class(quiz_long))
+                  `responded at` = parse_datetime(as.character(`responded at`)))
+  class(quiz_long) <- c("quiz", class(quiz_long))
   quiz_long %>% 
     mutate(score = as.integer(score))
 }
@@ -110,7 +109,7 @@ plot_hist <- function(quiz_object){
                    color = "dodgerblue4", fill = "dodgerblue4") +
     labs(x = "Total score (max score = 100)", 
          y = "Count") +
-    facet_wrap(~quiz, ncol = 2)
+    facet_wrap(~`quiz`, ncol = 2)
 }
 plot_boxplots <- function(quiz_object){
   summarized_data <- quiz_object %>%  
@@ -130,17 +129,17 @@ plot_order <- function(quiz_object){
                                           "Second Tercil", 
                                           "Third Tercil (Slowest)"))
   quiz_object %>% 
-    dplyr::group_by(question, quiz) %>% 
+    dplyr::group_by(`question`, `quiz`) %>% 
     dplyr::mutate(`time per question` = as.numeric(`time per question`),
                   `Tercil per time temp` = ntile(`time per question`, 3)) %>% 
     left_join(df_left) %>% 
     dplyr::mutate(temp = sum(!is.na(`Tercil per time`)),
                   `Tercil per time` = if_else(temp > 10, as.character(`Tercil per time`), "NA")) %>% 
     dplyr::filter(!is.na(`Tercil per time`), `Tercil per time`!= "NA") %>% 
-    dplyr::group_by(question, `Tercil per time`, quiz) %>% 
+    dplyr::group_by(`question`, `Tercil per time`, quiz) %>% 
     dplyr::summarise(`mean score` = mean(as.numeric(score), na.rm = T)) %>% 
     dplyr::filter(`mean score`>.05) %>% 
-    ggplot2::ggplot(aes(x = factor(question), 
+    ggplot2::ggplot(aes(x = factor(`question`), 
                         y = `mean score` * 100, 
                         group = `Tercil per time`, 
                         color = `Tercil per time`,
@@ -151,7 +150,7 @@ plot_order <- function(quiz_object){
     labs(x = "Question in the quiz",
          y = "Average score per tercil (max score = 100)") +
     geom_label(alpha = .7) +
-    facet_wrap(~quiz, ncol = 1)
+    facet_wrap(~`quiz`, ncol = 1)
 } 
 plot_easiness_time <- function(quiz_object){
   quiz_object %>%
@@ -209,7 +208,7 @@ plot_etl <- function(quiz_object, challengeLevel, item = "MCM.2014.item", rating
     dplyr::select(question_id, `mean time`, `mean score`)
   
   homo_challenge_level <- challengeLevel %>% 
-    dplyr::select(item, rating) %>% 
+    dplyr::select(all_of(c(item, rating))) %>% 
     setNames(c("question_id", "rating"))
   
   rating_df <- data.frame(rating = factor(c(1,2,3)), 
