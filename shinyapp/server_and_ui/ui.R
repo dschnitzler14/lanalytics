@@ -52,7 +52,7 @@ body <- dashboardBody(
                     CRAN and can be installed with the following command: "),
                   br(),
                   p(code("install_packages('eRm')")),
-                  p("On the other hand, the lanalytics package contain some useful statistical analysis 
+                  p("The lanalytics package contains some useful statistical analysis 
                    that can be used for online quizzes. This package can be installed with the following command: ",
                     code("install_github('savrgg/lanalytics')")),
                   br(),
@@ -61,10 +61,10 @@ body <- dashboardBody(
                 ),
                 mainPanel(
                   h1("Instructions"),
-                  p("The Learning Analytics dashboard consist of four tabs, the first two are
-                     used to import data and display the datasets. The consequtive tabs are used 
+                  p("The Learning Analytics dashboard consists of four tabs, the first two are
+                     used to import data and display the datasets. The consecutive tabs are used 
                     for analysis and graphs given by the eRm and the lanalytics packages.
-                    To get started follow this instructions:"), 
+                    To get started follow these instructions:"), 
                   br(),
                   p("1) Import your quizzes datafiles in the ", strong("Import quizzes"), 
                     " tab and press the upload button."),
@@ -76,8 +76,7 @@ body <- dashboardBody(
                     and press the upload button."),
                   p("4) Go to the ", strong("Display quizzes"), 
                     " tab and check that the data files are imported correctly."),
-                  p("5) (Optionally) If you uploaded a cognitive level file, select in the ",
-                    strong("Display quizzes"), " tab which colum correspond to the item and
+                  p("5) (Optionally) If you uploaded a cognitive level file, select below which column correspond to the item and
                     which to the cognitive level."),
                   p("6) Go to the ", strong("Data Analysis"), 
                     " tab and for each subtab select the quiz to analyze."),
@@ -97,15 +96,15 @@ body <- dashboardBody(
                 tabPanel("csv file",
                          br(),
                          p("Select a *.csv file that contains two columns per item. The first indicating its ", em("score"), 
-                           " and the second indicating its ", em("answering time") ,". In addition, the file should contain an 
-                           ID column called ", em("email address"), ". This file can be exported from the Learning Catalytics software."),
+                           " and the second indicating its ",em("answering time"),". In addition, the file should contain an 
+                           ID column called ",em("email address"),". This file can be exported from the Learning Catalytics software."),
                          br(),
                          fileInput('file1', 'Select file:',
                                    accept = c('.csv'),
                                    multiple = TRUE
                          ),
                          p("Now click ", strong("Add quiz dataset"), " to correctly upload one or more files 
-                    or press ", strong("Remove cognitive dataset"), " to delete them all."),
+                    or click ", strong("Remove quiz dataset"), " to delete them all."),
                          column(3, 
                                 actionButton(inputId = "upload_quiz_dataset", 
                                              label = "Add quiz dataset")
@@ -121,10 +120,10 @@ body <- dashboardBody(
                 id = "2_tabset_2", height = "400px",
                 tabPanel("Cognitive file", 
                          br(),
-                         p("Select a *.csv file that contains the cognitive level of each item. This file must contain
+                         markdown("Select a *.csv file that contains the cognitive level of each item. This file must contain
                            two columns, one indicating the quiz and the item number in the format Q1_q3 
-                          (Quiz 1, question 3) and the other indicating the cognitive level in the scale 
-                           1-3 (1=low, 3=high). Use the radio buttons below to indicate column name"),
+                          (Quiz 1, question 3) and the other indicating the cognitive level on a scale 
+                           1-3 (1=low, 3=high). **Use the radio buttons below to select the correct column names**"),
                          br(),
                          fileInput('file2', 'Select file:',
                                    accept = c('.csv')
@@ -180,29 +179,7 @@ body <- dashboardBody(
                   uiOutput("choose_cognitive_rating")
               ),
             ),
-            # fluidRow(
-            #   br(),
-            #   box(title = "Select column of the item:", 
-            #       br(),
-            #       p("If you import a cognitive file, this box will contain the names of the 
-            #         columns of the file. Please select the name of the column that corresponds to 
-            #         the quiz and the item number (in the format Q1_q2 for Quiz 1, question 2):"),
-            #       br(),
-            #       status = "primary", width = 6,
-            #       collapsible = TRUE,
-            #       uiOutput('choose_cognitive_item')
-            #   ),
-            #   box(title = "Select column of the rating:", 
-            #       br(),
-            #       p("If you import a cognitive file, this box will contain the names of the 
-            #         columns of the file. Please select the name of the column that corresponds to 
-            #         the cognitive rating:"),
-            #       br(),
-            #       status = "primary", width = 6,
-            #       collapsible = TRUE,
-            #       uiOutput('choose_cognitive_rating')
-            #   )
-            # ),
+            
     ),
     ### u3 display --------------------------------------------------------
     tabItem(tabName = "3_display", 
@@ -213,7 +190,7 @@ body <- dashboardBody(
               box(title = "Quiz dataset:", status = "primary", width = 12,
                   collapsible = TRUE,
                   br(),
-                  p("The quizzes files that you imported are shown in ", 
+                  p("The quiz files that you imported are shown in ", 
                     strong('long format'), ". That means that each row represent one answer 
                     per item per quiz per student:"),
                   br(),
@@ -327,10 +304,10 @@ body <- dashboardBody(
             fluidRow(
               box(title = "Guessers plot", status = "primary", width = 12,
                   br(),
-                  p("Sometimes when a student answers a question very fast (or under a threshold), the probability that he get wrong or just 
-                    guessed the answer is high. In this plot the questions that are answered in less than 20 seconds (or below an individual threshold) 
-                    are shown. 1 means that he answer the question correctly and -1 means that he answer the question incorrectly. Questions that take more 
-                    time than the threshold are not shown"),
+                  p("Sometimes when a student answers a question very quickly (or under a threshold time), the probability that the incorrect answer was chosen or just 
+                    guessed the answer is high. In this plot, the questions that were answered in less than 20 seconds (or below an individual threshold) 
+                    are shown. 1 means that the answer to the question was correct and -1 means that the answer to the question was incorrect. Questions that took more 
+                    time than the threshold are not shown here."),
                   collapsible = TRUE,
                   plotOutput("plot_guessers"),
                   downloadButton("downloadPlot_guesser", 'Download Plot')
@@ -340,9 +317,7 @@ body <- dashboardBody(
             fluidRow(
               box(title = "Order plot", status = "primary", width = 12,
                   br(),
-                  p("This plot is useful to find the relation between the time per question and the obtained correct answers. It is important to
-                    get an idea of how many time each question takes to get a better idea of the design of the quizzes and exams. Some topics take more
-                    time and a little bit of more time can have a consequence of a better grade."),
+                  p("This plot is useful to find the relationship between the time per question and the obtained correct answers. It is important to understand how long each question takes, in order to understand the design of the quizzes and exams. Some topics take more time, as such, more answering time can improve the resulting grade."),
                   collapsible = TRUE,
                   plotOutput("plot_order"),
                   downloadButton("downloadPlot_order", 'Download Plot')
@@ -368,7 +343,7 @@ body <- dashboardBody(
             fluidRow(
               box(title = "Histogram", status = "primary", width = 12,
                   br(),
-                  p("This is an histogram of the final grades in the selected quiz. Ideally, most of the students should be in the middle of the 
+                  p("This is a histogram of the final grades in the selected quiz. Ideally, most of the students should be in the middle of the 
                     plot."),
                   collapsible = TRUE,
                   plotOutput("plot_hist"),
@@ -378,9 +353,9 @@ body <- dashboardBody(
             fluidRow(
               box(title = "Boxplot", status = "primary", width = 12,
                   br(),
-                  p("This is a Boxplot of the grades of each quiz. This is a non-parametric graph that shows the distribution of the grades.
-                    It is useful to easily see the dispersion, skweness and outliers. The box contains 50% of the data (the contained between the first 
-                    and the third quartil). Also, the bold line represent the median of the data. The whiskers are useful to see the variability above 
+                  p("This is a boxplot of the grades of each quiz. This is a non-parametric graph that shows the distribution of the grades.
+                    It is useful to easily see the dispersion, skewness, and outliers. The box contains 50% of the data (the data contained between the first 
+                    and the third quartile). The bold line represents the median of the data. The whiskers are useful to see the variability above 
                     and below these quartiles."),
                   collapsible = TRUE,
                   plotOutput("plot_boxplots"),
@@ -390,8 +365,8 @@ body <- dashboardBody(
             fluidRow(
               box(title = "Easiness-time (ET-plot)", status = "primary", width = 6,
                   br(),
-                  p("The Easiness-time plot shows the relation between the spent time in each question versus the average grade. 
-                    Sometimes easy questions can be answered correctly in just some seconds, while difficult questions should take more time.
+                  p("The Easiness-time (ET) plot shows the relationship between the spent time on each question versus the average grade. 
+                    Sometimes easy questions can be answered correctly in seconds, while difficult questions should take more time.
                     In this plot, we can visualize this relationship."),
                   collapsible = TRUE,
                   plotOutput("plot_et"),
@@ -400,9 +375,9 @@ body <- dashboardBody(
               ),
               box(title = "ETL", status = "primary", width = 6,
                   br(),
-                  p("The Easiness-Time-Level plot is like the ET-plot, but taking in consideration the cognitive level of the questions.
-                      Usually the question with higher cognitive levels take more time and are more difficult, while the low cognitive level
-                      questions are easier and may be answered in less time. In this plot we can observe if this idea holds."),
+                  p("The Easiness-Time-Level plot is like the ET-plot, but taking into consideration the cognitive level of the questions.
+                      Usually the questions with higher cognitive levels take more time and are more difficult, while the low cognitive level
+                      questions are easier and may be answered in less time. In this plot, we can observe if this idea holds."),
                   collapsible = TRUE,
                   plotOutput("plot_etl"),
                   downloadButton("downloadPlot_etl", 'Download Plot')
@@ -416,7 +391,7 @@ body <- dashboardBody(
     tabItem(tabName = "6_3_grupal",
             fluidRow(
               h1("Analysis per student."),
-              h4("In this tab you can see statistical summaries of the performance per student"),
+              h4("In this tab you can see statistical summaries of the performances per student"),
               box(title = "Quizzes to analyze:", status = "info", width = 6,
                   br(),
                   p("Please select one or more quizzes to show the information."),
@@ -431,8 +406,8 @@ body <- dashboardBody(
             fluidRow(
               box(title = "Group history", status = "primary", width = 12,
                   br(),
-                  p("In this plot you can select a student and see its performance in all the quizzes. 
-                    Also, if the grade of the final exam is provided, a red line will be show in the plot."),
+                  p("In this plot you can select a student and see their performance in all the quizzes. 
+                    If the grade of the final exam has been provided, a red line will be shown in the plot."),
                   collapsible = TRUE,
                   plotOutput("plot_group_tot"),
                   downloadButton("downloadPlot_group_tot", 'Download Plot')
